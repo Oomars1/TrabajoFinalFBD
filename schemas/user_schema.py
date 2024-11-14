@@ -13,7 +13,7 @@ class Rol(BaseModel):
 # Modelo para la tabla de Usuarios
 class User(BaseModel):
     id_usuario: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     nombre: str
     apellido: str
     password: str
@@ -30,7 +30,7 @@ class User(BaseModel):
 # Modelo para la tabla de Vehículos
 class Vehiculo(BaseModel):
     id_vehiculo: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     modelo: str
     marca: str
     placa: str
@@ -44,7 +44,7 @@ class Vehiculo(BaseModel):
 # Modelo para la tabla de Gasolineras
 class Gasolinera(BaseModel):
     id_gasolinera: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     nombre: str
     direccion: str
 
@@ -54,7 +54,7 @@ class Gasolinera(BaseModel):
 # Modelo para la tabla de Proyecto
 class Proyecto(BaseModel):
     id_proyecto: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     nombre: str
     direccion: str
     activo: bool = False
@@ -65,7 +65,7 @@ class Proyecto(BaseModel):
 # Modelo para la tabla de Bitacora
 class Bitacora(BaseModel):
     id_bitacora: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     comentario: Optional[str] = None
     km_inicial: int
     km_final: int
@@ -86,20 +86,23 @@ class Bitacora(BaseModel):
     class Config:
         from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
 
+# Clase de respuesta de Bitacora, con las relaciones necesarias
 class BitacoraResponse(BaseModel):
     id_bitacora: int
+    created_at: datetime
+    comentario: Optional[str] = None
     km_inicial: int
     km_final: int
     num_galones: float
     costo: float
     tipo_gasolina: str
-    usuario: str
-    vehiculo: str
-    gasolinera: str
-    proyecto: str
+    usuario: Optional[str] = None  # Nombre del usuario
+    vehiculo: Optional[str] = None  # Modelo del vehículo
+    gasolinera: Optional[str] = None  # Nombre de la gasolinera
+    proyecto: Optional[str] = None  # Nombre del proyecto
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True
 
 # Modelo para contar los usuarios totales
 class UserCount(BaseModel):
@@ -141,7 +144,7 @@ class LogCreate(BaseModel):
 # Respuesta para el Log
 class LogResponse(BaseModel):
     id_log: int
-    created_at: datetime
+    created_at: Optional[datetime] = None
     descripcion: str
     id_usuario: int
 

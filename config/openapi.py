@@ -4,7 +4,7 @@ tags_metadata = [
         "description": "Endpoints relacionados con la gestión de usuarios (crear, obtener, actualizar, eliminar)."
     },
     {
-        "name": "vehicles",
+        "name": "vehiculos",
         "description": "Endpoints para gestionar vehículos (agregar, obtener, actualizar, eliminar)."
     },
     {

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
+from datetime import datetime, timezone
 from typing import List
 from config.db import conn
 from models.user import users, rol, vehiculos, bitacora, proyecto, gasolineras
@@ -8,7 +9,7 @@ from sqlalchemy import func, select, insert, update, delete, join
 user = APIRouter()
 
 # Obtener el conteo de usuarios
-@user.get("/users/count", tags=["users"], response_model=UserCount)
+@user.get("/users/count", tags=["users"], response_model=UserCount) #ok
 def get_users_count():
     try:
         query = select(func.count()).select_from(users)
@@ -18,7 +19,7 @@ def get_users_count():
         raise HTTPException(status_code=500, detail=str(e))
 
 # Obtener un usuario por su ID
-@user.get("/users/{id}", tags=["users"], response_model=User, description="Get a single user by Id")
+@user.get("/users/{id}", tags=["users"], response_model=User, description="Get a single user by Id") #ok
 def get_user(id: int):
     user_record = conn.execute(users.select().where(users.c.id_usuario == id)).first()
     if user_record is None:
@@ -26,12 +27,12 @@ def get_user(id: int):
     return user_record
 
 # Obtener todos los usuarios
-@user.get("/users", tags=["users"], response_model=List[User], description="Get all users")
+@user.get("/users", tags=["users"], response_model=List[User], description="Get all users") #ok
 def get_all_users():
     return conn.execute(users.select()).fetchall()
 
 # Crear un nuevo usuario
-@user.post("/users/", tags=["users"], response_model=User, description="Create a new user")
+@user.post("/users/", tags=["users"], response_model=User, description="Create a new user") #ok
 def create_user(user: User):
     try:
         new_user = {
@@ -39,8 +40,10 @@ def create_user(user: User):
             "apellido": user.apellido,
             "password": user.password,  # Asegúrate de cifrar la contraseña
             "id_rol": user.id_rol,
-            "username": user.username
+            "username": user.username,
+            "created_at": datetime.now()
         }
+        
         result = conn.execute(users.insert().values(new_user))
         conn.commit()
         return conn.execute(users.select().where(users.c.id_usuario == result.lastrowid)).first()
@@ -48,7 +51,7 @@ def create_user(user: User):
         raise HTTPException(status_code=400, detail=str(e))
 
 # Actualizar un usuario por su ID
-@user.put("/users/{id}", tags=["users"], response_model=User, description="Update a User by Id")
+@user.put("/users/{id}", tags=["users"], response_model=User, description="Update a User by Id") #ok
 def update_user(id: int, user: User):
     existing_user = conn.execute(users.select().where(users.c.id_usuario == id)).first()
     if existing_user is None:
@@ -67,7 +70,7 @@ def update_user(id: int, user: User):
     return conn.execute(users.select().where(users.c.id_usuario == id)).first()
 
 # Eliminar un usuario por su ID
-@user.delete("/users/{id}", tags=["users"], status_code=status.HTTP_204_NO_CONTENT)
+@user.delete("/users/{id}", tags=["users"], status_code=status.HTTP_204_NO_CONTENT) #ok
 def delete_user(id: int):
     result = conn.execute(users.delete().where(users.c.id_usuario == id))
     conn.commit()
@@ -78,7 +81,7 @@ def delete_user(id: int):
     return {"message": "Se eliminó el usuario", "id": id}
 
 # Crear un nuevo vehículo (si es necesario para tu aplicación)
-@user.post("/vehicles/", tags=["vehicles"], description="Create a new vehicle")
+@user.post("/vehiculos/", tags=["vehiculos"], description="Create a new vehicle") #ok
 def create_vehicle(vehicle: VehiculoCreate):
     try:
         stmt = insert(vehiculos).values(
@@ -98,7 +101,7 @@ def create_vehicle(vehicle: VehiculoCreate):
         raise HTTPException(status_code=400, detail=str(e))
 
 # Obtener todos los vehículos (si es necesario para tu aplicación)
-@user.get("/vehicles/", tags=["vehicles"], response_model=List[VehiculoResponse], description="Get all vehicles")
+@user.get("/vehiculos/", tags=["vehiculos"], response_model=List[VehiculoResponse], description="Get all vehicles") #ok
 def get_vehicles():
     try:
         stmt = select(
@@ -106,6 +109,8 @@ def get_vehicles():
             vehiculos.c.modelo,
             vehiculos.c.marca,
             vehiculos.c.placa,
+            vehiculos.c.rendimiento,
+            vehiculos.c.galonaje,
             vehiculos.c.tipo_combustible
         )
         
@@ -113,10 +118,12 @@ def get_vehicles():
         vehicles = []
         for row in result:
             vehicle_data = {
-                "id": row.id_vehiculo,
+                "id_vehiculo": row.id_vehiculo,  # Cambié 'id' a 'id_vehiculo'
                 "modelo": row.modelo,
                 "marca": row.marca,
                 "placa": row.placa,
+                "rendimiento": row.rendimiento,  # Cambié 'Rendimiento' a 'rendimiento'
+                "galonaje": row.galonaje,        # Cambié 'Galonaje' a 'galonaje'
                 "tipo_combustible": row.tipo_combustible
             }
             vehicles.append(vehicle_data)
@@ -125,11 +132,15 @@ def get_vehicles():
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Crear un nuevo registro en la bitácora
-@user.post("/bitacora/", tags=["bitacora"], description="Create a new record in the bitacora")
+
+# Crear un nuevo registro en la bitácora  -------------- probada y pasada
+@user.post("/bitacora/", tags=["bitacora"], description="Create a new record in the bitacora") #no probada ojo faltan datos
 def create_bitacora(record: Bitacora):
     try:
+         # Preparamos la inserción de datos, incluyendo 'comentario' si es proporcionado
         stmt = insert(bitacora).values(
+            created_at= datetime.now(),  # Añadimos 'created_at'
+            comentario=record.comentario,   # Añadimos 'comentario' que es opcional
             km_inicial=record.km_inicial,
             km_final=record.km_final,
             num_galones=record.num_galones,
@@ -148,43 +159,51 @@ def create_bitacora(record: Bitacora):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-# Obtener todas las bitácoras
-@user.get("/bitacora/", tags=["bitacora"], response_model=List[BitacoraResponse], description="Get all bitacora records")
+
+#okokokokok
+@user.get("/bitacora/", tags=["bitacora"], response_model=List[BitacoraResponse], description="Get all bitacora records with related data")
 def get_bitacora():
     try:
         stmt = select(
             bitacora.c.id_bitacora,
+            bitacora.c.created_at,
+            bitacora.c.comentario,
             bitacora.c.km_inicial,
             bitacora.c.km_final,
             bitacora.c.num_galones,
             bitacora.c.costo,
             bitacora.c.tipo_gasolina,
-            users.c.nombre,
-            vehiculos.c.modelo,
-            gasolineras.c.nombre.label("gasolinera"),
-            proyecto.c.nombre.label("proyecto")
+            users.c.nombre.label("usuario"),  # Nombre del usuario
+            vehiculos.c.modelo.label("vehiculo"),  # Modelo del vehículo
+            gasolineras.c.nombre.label("gasolineras"),  # Corregir alias para gasolinera
+            proyecto.c.nombre.label("proyecto")  # Nombre del proyecto
         ).join(users, bitacora.c.id_usuario == users.c.id_usuario) \
          .join(vehiculos, bitacora.c.id_vehiculo == vehiculos.c.id_vehiculo) \
          .join(gasolineras, bitacora.c.id_gasolinera == gasolineras.c.id_gasolinera) \
          .join(proyecto, bitacora.c.id_proyecto == proyecto.c.id_proyecto)
-        
+
         result = conn.execute(stmt).fetchall()
+
+        # Preparamos la lista de registros con los datos obtenidos
         records = []
         for row in result:
             record_data = {
-                "id": row.id_bitacora,
+                "id_bitacora": row.id_bitacora,
+                "created_at": row.created_at,
+                "comentario": row.comentario,
                 "km_inicial": row.km_inicial,
                 "km_final": row.km_final,
                 "num_galones": row.num_galones,
                 "costo": row.costo,
                 "tipo_gasolina": row.tipo_gasolina,
-                "usuario": row.nombre,
-                "vehiculo": row.modelo,
-                "gasolinera": row.gasolineras,
-                "proyecto": row.proyecto
+                "usuario": row.usuario,  # Usuario como 'usuario'
+                "vehiculo": row.vehiculo,  # Vehículo como 'vehiculo'
+                "gasolineras": row.gasolineras,  # Gasolinera como 'gasolineras'
+                "proyecto": row.proyecto  # Proyecto como 'proyecto'
             }
             records.append(record_data)
 
         return records
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=f"Error retrieving bitacora records: {str(e)}")
