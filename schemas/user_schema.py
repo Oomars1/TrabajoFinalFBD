@@ -2,6 +2,10 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
 # Modelo para la tabla de Roles (Rol)
 class Rol(BaseModel):
     id_rol: Optional[int] = None

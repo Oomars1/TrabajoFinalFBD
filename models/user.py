@@ -14,7 +14,7 @@ users = Table("usuarios", meta,
     Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
     Column("nombre", String(50), nullable=False),
     Column("apellido", String(50), nullable=False),
-    Column("password", String(55), nullable=False),
+    Column("password", String(255), nullable=False),
     Column("id_rol", Integer, ForeignKey("rol.id_rol")),
     Column("activo", Boolean, default=False),
     Column("username", String(30), unique=True),

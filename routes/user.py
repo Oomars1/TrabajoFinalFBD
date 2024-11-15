@@ -1,13 +1,47 @@
 from fastapi import APIRouter, HTTPException, status
 from datetime import datetime, timezone
+import bcrypt
 from typing import List
 from config.db import conn
 from models.user import users, rol, vehiculos, bitacora, proyecto, gasolineras, log
 from schemas.user_schema import User, UserCount, VehiculoCreate, VehiculoResponse, Bitacora, BitacoraResponse
-from schemas.user_schema import  Rol, LogCreate, LogResponse, Proyectos, Gasolinera
+from schemas.user_schema import  Rol, LogCreate, LogResponse, Proyectos, Gasolinera, LoginRequest
 from sqlalchemy import func, select, insert, update, delete, join
+from utils.auth import verify_password 
 
 user = APIRouter()
+
+# Función para encriptar la contraseña necesario
+def encrypt_password(password: str) -> str:
+    salt = bcrypt.gensalt()  # Genera un "salt" aleatorio
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)  # Hashea la contraseña
+    return hashed_password.decode('utf-8')  # Devuelve el hash como string
+
+# Función de login
+@user.post("/login", tags=["users"], description="Login user") #okkkkkkk
+def login(request: LoginRequest):
+    try:
+        # Realizar la consulta para obtener el usuario
+        query = select(users).where(users.c.username == request.username)  # Usamos 'select' de SQLAlchemy
+        user = conn.execute(query).fetchone()  # Ejecutamos la consulta y obtenemos el primer resultado
+        
+        if user is None:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+        # Acceder a los valores de la tupla usando índices
+        user_id = user[0]  # id_usuario está en la primera posición
+        username = user[7]  # username está en la séptima posición (suponiendo que es el séptimo campo)
+        password_hash = user[4]  # password está en la quinta posición (suponiendo que es el quinto campo)
+
+        # Verificar la contraseña usando la función de hash
+        if not verify_password(request.password, password_hash):  # Usamos el hash de la contraseña
+            raise HTTPException(status_code=401, detail="Contraseña incorrecta")
+        
+        # Si la contraseña es correcta, devuelve el usuario
+        return {"id_usuario": user_id, "username": username}
+    
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # Obtener el conteo de usuarios
 @user.get("/users/count", tags=["users"], response_model=UserCount) #ok
@@ -28,18 +62,22 @@ def get_user(id: int):
     return user_record
 
 # Obtener todos los usuarios
-@user.get("/users", tags=["users"], response_model=List[User], description="Get all users") #ok
+@user.get("/users/", tags=["users"], response_model=List[User], description="Get all users") #ok
 def get_all_users():
     return conn.execute(users.select()).fetchall()
 
+
 # Crear un nuevo usuario
-@user.post("/users/", tags=["users"], response_model=User, description="Create a new user") #ok
+@user.post("/users/", tags=["users"], response_model=User, description="Create a new user")
 def create_user(user: User):
     try:
+        # Encriptamos la contraseña
+        hashed_password = encrypt_password(user.password)
+        
         new_user = {
             "nombre": user.nombre,
             "apellido": user.apellido,
-            "password": user.password,  # Asegúrate de cifrar la contraseña
+            "password": hashed_password,  # Usamos la contraseña encriptada
             "id_rol": user.id_rol,
             "username": user.username,
             "created_at": datetime.now()
@@ -52,20 +90,24 @@ def create_user(user: User):
         raise HTTPException(status_code=400, detail=str(e))
 
 # Actualizar un usuario por su ID
-@user.put("/users/{id}", tags=["users"], response_model=User, description="Update a User by Id") #ok
+@user.put("/users/{id}", tags=["users"], response_model=User, description="Update a User by Id")
 def update_user(id: int, user: User):
     existing_user = conn.execute(users.select().where(users.c.id_usuario == id)).first()
     if existing_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     
+    # Si la contraseña fue proporcionada, encriptarla
     updated_values = {
         "nombre": user.nombre,
         "apellido": user.apellido,
-        "password": user.password,  # Asegúrate de cifrar la contraseña
         "id_rol": user.id_rol,
         "username": user.username
     }
-    
+
+    # Encriptar solo la contraseña si ha sido modificada
+    if user.password:
+        updated_values["password"] = encrypt_password(user.password)
+
     conn.execute(users.update().where(users.c.id_usuario == id).values(updated_values))
     conn.commit()
     return conn.execute(users.select().where(users.c.id_usuario == id)).first()
