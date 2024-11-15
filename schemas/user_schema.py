@@ -52,7 +52,7 @@ class Gasolinera(BaseModel):
         from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
 
 # Modelo para la tabla de Proyecto
-class Proyecto(BaseModel):
+class Proyectos(BaseModel):
     id_proyecto: Optional[int] = None
     created_at: Optional[datetime] = None
     nombre: str
@@ -81,7 +81,7 @@ class Bitacora(BaseModel):
     usuario: Optional[User] = None
     vehiculo: Optional[Vehiculo] = None
     gasolinera: Optional[Gasolinera] = None
-    proyecto: Optional[Proyecto] = None
+    proyecto: Optional[Proyectos] = None
 
     class Config:
         from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
@@ -150,3 +150,5 @@ class LogResponse(BaseModel):
 
     class Config:
         from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+
+

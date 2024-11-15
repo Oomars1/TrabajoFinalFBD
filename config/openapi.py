@@ -12,16 +12,20 @@ tags_metadata = [
         "description": "Endpoints para acceder a los logs de los usuarios y sus actividades."
     },
     {
-        "name": "projects",
+        "name": "proyectos",
         "description": "Endpoints relacionados con proyectos (crear, obtener, actualizar, eliminar)."
     },
     {
-        "name": "gas stations",
+        "name": "gasolineras",
         "description": "Endpoints para gestionar gasolineras (agregar, obtener, actualizar, eliminar)."
     },
     {
         "name": "fuel logs",
         "description": "Endpoints para gestionar los registros de consumo de combustible y bitácoras asociadas a vehículos."
+    },
+    {
+        "name": "roles",
+        "description": "Endpoints para gestionar los registros de roles"
     }
 ]
 
