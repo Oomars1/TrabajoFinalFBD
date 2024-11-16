@@ -1,52 +1,32 @@
-annotated-types==0.7.0
-anyio==4.6.2.post1
-arrow==1.3.0
-binaryornot==0.4.4
-certifi==2024.8.30
-chardet==5.2.0
-charset-normalizer==3.4.0
-click==8.1.7
-colorama==0.4.6
-cookiecutter==2.6.0
-distlib==0.3.9
-fastapi==0.115.5
-filelock==3.16.1
-flet==0.24.1
-flet-core==0.24.1
-flet-runtime==0.24.1
-h11==0.14.0
-httpcore==1.0.6
-httptools==0.6.4
-httpx==0.27.2
-idna==3.10
-Jinja2==3.1.4
-markdown-it-py==3.0.0
-MarkupSafe==3.0.2
-mdurl==0.1.2
-oauthlib==3.2.2
-packaging==23.2
+annotated-types @ file:///home/conda/feedstock_root/build_artifacts/annotated-types_1716290248287/work
+anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1728935693959/work
+argon2-cffi @ file:///opt/conda/conda-bld/argon2-cffi_1645000214183/work
+argon2-cffi-bindings @ file:///work/perseverance-python-buildout/croot/argon2-cffi-bindings_1698877183685/work
+bcrypt @ file:///work/perseverance-python-buildout/croot/bcrypt_1698864043363/work
+cffi @ file:///croot/cffi_1726856441404/work
+click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
+cryptography==43.0.1
+dataclasses @ file:///home/conda/feedstock_root/build_artifacts/dataclasses_1628958434797/work
+exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1720869315914/work
+fastapi @ file:///croot/fastapi_1724789151288/work
+fernet==1.0.1
+greenlet==3.1.1
+gunicorn @ file:///croot/gunicorn_1720002502993/work
+h11 @ file:///home/conda/feedstock_root/build_artifacts/h11_1664132893548/work
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1726459485162/work
+packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1731456981915/work
+passlib==1.7.4
+pyaes==1.6.1
+pycparser==2.22
 pydantic==2.9.2
-pydantic_core==2.23.4
-Pygments==2.18.0
-pypng==0.20220715.0
-python-dateutil==2.9.0.post0
-python-dotenv==1.0.1
-python-slugify==8.0.4
-PyYAML==6.0.2
-qrcode==7.4.2
-repath==0.9.0
-requests==2.32.3
-rich==13.9.4
-six==1.16.0
-sniffio==1.3.1
-starlette==0.41.2
-text-unidecode==1.3
-types-python-dateutil==2.9.0.20241003
+pydantic_core @ file:///croot/pydantic-core_1724790363792/work
+PyMySQL==1.1.1
+pytz @ file:///croot/pytz_1713974312559/work
+setuptools==75.1.0
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+sniffio @ file:///home/conda/feedstock_root/build_artifacts/sniffio_1708952932303/work
+SQLAlchemy==2.0.35
+starlette @ file:///croot/starlette-recipe_1724683205298/work
 typing_extensions==4.12.2
-urllib3==2.2.3
-uvicorn==0.32.0
-virtualenv==20.27.1
-watchdog==4.0.2
-watchfiles==0.24.0
-websockets==14.1
-bcrypt
+uvicorn==0.31.1
+wheel==0.44.0
