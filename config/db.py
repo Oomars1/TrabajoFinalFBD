@@ -1,8 +1,16 @@
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from sqlalchemy import create_engine, MetaData
-#Creamos la conexion ala base de datos
-#engine=create_engine("mariadb+pymysql://root:oomars2401@localhost:3306/pruebagas")
-engine=create_engine("mariadb+pymysql://root:oomars2401@localhost:3306/pruebagas")
-#creamos la metadata para la creacion de los datos
-meta=MetaData()
-#almacenamos la conexion para utilizarla
-conn=engine.connect()
+
+# Crear la conexión a la base de datos
+engine = create_engine(
+    "mysql://edwin:oomars2401@/pruebagas"
+)
+
+# Crear la metadata para la creación de los datos
+meta = MetaData()
+
+# Almacenar la conexión para utilizarla
+conn = engine.connect()
+
