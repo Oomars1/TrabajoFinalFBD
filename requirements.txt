@@ -1,32 +1,32 @@
-annotated-types @ file:///home/conda/feedstock_root/build_artifacts/annotated-types_1716290248287/work
-anyio @ file:///home/conda/feedstock_root/build_artifacts/anyio_1728935693959/work
-argon2-cffi @ file:///opt/conda/conda-bld/argon2-cffi_1645000214183/work
-argon2-cffi-bindings @ file:///work/perseverance-python-buildout/croot/argon2-cffi-bindings_1698877183685/work
-bcrypt @ file:///work/perseverance-python-buildout/croot/bcrypt_1698864043363/work
-cffi @ file:///croot/cffi_1726856441404/work
-click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
+annotated-types==0.4.3
+anyio==3.6.0
+argon2-cffi==21.3.0
+argon2-cffi-bindings==21.2.0
+bcrypt==4.0.1
+cffi==1.15.1
+click==8.1.3
 cryptography==43.0.1
-dataclasses @ file:///home/conda/feedstock_root/build_artifacts/dataclasses_1628958434797/work
-exceptiongroup @ file:///home/conda/feedstock_root/build_artifacts/exceptiongroup_1720869315914/work
-fastapi @ file:///croot/fastapi_1724789151288/work
+dataclasses==0.6
+exceptiongroup==1.1.0
+fastapi==0.95.1
 fernet==1.0.1
 greenlet==3.1.1
-gunicorn @ file:///croot/gunicorn_1720002502993/work
-h11 @ file:///home/conda/feedstock_root/build_artifacts/h11_1664132893548/work
-idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1726459485162/work
-packaging @ file:///home/conda/feedstock_root/build_artifacts/packaging_1731456981915/work
+gunicorn==20.1.0
+h11==0.14.0
+idna==3.4
+packaging==23.1
 passlib==1.7.4
 pyaes==1.6.1
 pycparser==2.22
 pydantic==2.9.2
-pydantic_core @ file:///croot/pydantic-core_1724790363792/work
+pydantic-core==2.9.2
 PyMySQL==1.1.1
-pytz @ file:///croot/pytz_1713974312559/work
+pytz==2023.3
 setuptools==75.1.0
-six @ file:///tmp/build/80754af9/six_1644875935023/work
-sniffio @ file:///home/conda/feedstock_root/build_artifacts/sniffio_1708952932303/work
+six==1.16.0
+sniffio==1.3.0
 SQLAlchemy==2.0.35
-starlette @ file:///croot/starlette-recipe_1724683205298/work
+starlette==0.21.0
 typing_extensions==4.12.2
 uvicorn==0.31.1
 wheel==0.44.0
