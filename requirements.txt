@@ -1,47 +1,29 @@
 annotated-types==0.7.0
 anyio==4.6.0
-argon2-cffi==21.3.0
-argon2-cffi-bindings==21.2.0
-bcrypt==3.2.0
-bzip2==1.0.8
-ca-certificates==2024.9.24
-cffi==1.17.1
-click==8.1.7
-cryptography==43.0.1
-expat==2.6.3
-fastapi==0.115.0
+argon2-cffi @ file:///opt/conda/conda-bld/argon2-cffi_1645000214183/work
+argon2-cffi-bindings @ file:///work/perseverance-python-buildout/croot/argon2-cffi-bindings_1698877183685/work
+bcrypt @ file:///work/perseverance-python-buildout/croot/bcrypt_1698864043363/work
+cffi @ file:///croot/cffi_1726856441404/work
+click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
+cryptography @ file:///croot/cryptography_1724940562255/work
+dataclasses @ file:///home/conda/feedstock_root/build_artifacts/dataclasses_1628958434797/work
+fastapi==0.115.5
 fernet==1.0.1
-greenlet==3.1.1
-h11==0.14.0
+greenlet @ file:///croot/greenlet_1702059959679/work
+h11 @ file:///home/conda/feedstock_root/build_artifacts/h11_1664132893548/work
 idna==3.10
-libffi==3.4.4
-libgcc-ng==11.2.0
-libgomp==11.2.0
-libstdcxx-ng==11.2.0
-libuuid==1.41.5
-ncurses==6.4
-openssl==3.0.15
 passlib==1.7.4
-pip==24.2
 pyaes==1.6.1
 pycparser==2.22
 pydantic==2.9.2
-pydantic-core==2.23.4
-pymysql==1.1.1
-python==3.12.7
-pytz==2024.1
-readline==8.2
+pydantic_core==2.23.4
+PyMySQL==1.1.1
+pytz @ file:///croot/pytz_1713974312559/work
 setuptools==75.1.0
-six==1.16.0
+six @ file:///tmp/build/80754af9/six_1644875935023/work
 sniffio==1.3.1
-sqlalchemy==2.0.35
-sqlite==3.45.3
-starlette==0.38.6
-tk==8.6.14
-typing-extensions==4.12.2
-typing_extensions==4.11.0
-tzdata==2024b
-uvicorn==0.31.1
+SQLAlchemy @ file:///croot/sqlalchemy_1725885050993/work
+starlette==0.41.2
+typing_extensions==4.12.2
+uvicorn @ file:///home/conda/feedstock_root/build_artifacts/uvicorn_1730219695027/work
 wheel==0.44.0
-xz==5.4.6
-zlib==1.2.13
