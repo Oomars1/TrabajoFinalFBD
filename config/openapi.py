@@ -7,6 +7,10 @@ tags_metadata = [
         "name": "vehiculos",
         "description": "Endpoints para gestionar vehículos (agregar, obtener, actualizar, eliminar)."
     },
+       {
+        "name": "bitacora",
+        "description": "Endpoints para gestionar bitacora."
+    },
     {
         "name": "logs",
         "description": "Endpoints para acceder a los logs de los usuarios y sus actividades."
@@ -18,10 +22,6 @@ tags_metadata = [
     {
         "name": "gasolineras",
         "description": "Endpoints para gestionar gasolineras (agregar, obtener, actualizar, eliminar)."
-    },
-    {
-        "name": "fuel logs",
-        "description": "Endpoints para gestionar los registros de consumo de combustible y bitácoras asociadas a vehículos."
     },
     {
         "name": "roles",
