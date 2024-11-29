@@ -1,77 +1,92 @@
-from sqlalchemy import Table, Column, Integer, String, Boolean, Text, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, Text, ForeignKey, Float, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from config.db import meta, engine
+from datetime import datetime
+
+# Definir el objeto Base para la aplicación
+Base = declarative_base()
 
 # Tabla de roles (rol)
-rol = Table("rol", meta,
-    Column("id_rol", Integer, primary_key=True, autoincrement=True),
-    Column("descripcion", Text, nullable=False)
-)
+class rol(Base):
+    __tablename__ = "rol"
 
-# Tabla de usuarios (usuarios)
-users = Table("usuarios", meta,
-    Column("id_usuario", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("nombre", String(50), nullable=False),
-    Column("apellido", String(50), nullable=False),
-    Column("password", String(255), nullable=False),
-    Column("id_rol", Integer, ForeignKey("rol.id_rol")),
-    Column("activo", Boolean, default=False),
-    Column("username", String(30), unique=True),
-)
+    id_rol = Column(Integer, primary_key=True, autoincrement=True)
+    descripcion = Column(Text, nullable=False)
+
+    # Relación inversa con los usuarios
+    users = relationship("users", back_populates="rol")
+
+# Tabla de usuarios (usuarios) UserDB
+class users(Base):
+    __tablename__ = "usuarios"
+
+    id_usuario = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    nombre = Column(String(50), nullable=False)
+    apellido = Column(String(50), nullable=False)
+    password = Column(String(255), nullable=False)
+    id_rol = Column(Integer, ForeignKey("rol.id_rol"))
+    activo = Column(Boolean, default=False)
+    username = Column(String(30), unique=True, nullable=False)
+
+    # Relación con el rol
+    rol = relationship("rol", back_populates="users")
 
 # Tabla de vehículos (vehiculos)
-vehiculos = Table("vehiculos", meta,
-    Column("id_vehiculo", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("modelo", String(50), nullable=False),
-    Column("marca", String(50), nullable=False),
-    Column("placa", String(30), unique=True, nullable=False),
-    Column("rendimiento", String(30)),
-    Column("galonaje", Float),
-    Column("tipo_combustible", String(25), nullable=False),
-)
+class vehiculos(Base):
+    __tablename__ = "vehiculos"
+
+    id_vehiculo = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    modelo = Column(String(50), nullable=False)
+    marca = Column(String(50), nullable=False)
+    placa = Column(String(30), unique=True, nullable=False)
+    rendimiento = Column(String(30))
+    galonaje = Column(Float)
+    tipo_combustible = Column(String(25), nullable=False)
 
 # Tabla de logs (log)
-log = Table("log", meta,
-    Column("id_log", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("descripcion", Text, nullable=False),
-    Column("id_usuario", Integer, ForeignKey("usuarios.id_usuario")),
-)
+class log(Base):
+    __tablename__ = "log"
+
+    id_log = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    descripcion = Column(Text, nullable=False)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"))
 
 # Tabla de proyectos (proyecto)
-proyecto = Table("proyecto", meta,
-    Column("id_proyecto", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("nombre", String(50), nullable=False),
-    Column("direccion", String(60), nullable=False),
-    Column("activo", Boolean, default=False),
-)
+class proyecto(Base):
+    __tablename__ = "proyecto"
+
+    id_proyecto = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    nombre = Column(String(50), nullable=False)
+    direccion = Column(String(60), nullable=False)
+    activo = Column(Boolean, default=False)
 
 # Tabla de gasolineras (gasolineras)
-gasolineras = Table("gasolineras", meta,
-    Column("id_gasolinera", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("nombre", String(50), nullable=False),
-    Column("direccion", String(60), nullable=False),
-)
+class gasolineras(Base):
+    __tablename__ = "gasolineras"
+
+    id_gasolinera = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    nombre = Column(String(50), nullable=False)
+    direccion = Column(String(60), nullable=False)
 
 # Tabla de bitácoras (bitacora)
-bitacora = Table("bitacora", meta,
-    Column("id_bitacora", Integer, primary_key=True, autoincrement=True),
-    Column("created_at", DateTime, default=func.current_timestamp(), nullable=False),  # Se usa default aquí
-    Column("comentario", Text),
-    Column("km_inicial", Integer, nullable=False),
-    Column("km_final", Integer, nullable=False),
-    Column("num_galones", Float, nullable=False),
-    Column("costo", Float, nullable=False),
-    Column("tipo_gasolina", String(30), nullable=False),
-    Column("id_usuario", Integer, ForeignKey("usuarios.id_usuario")),
-    Column("id_vehiculo", Integer, ForeignKey("vehiculos.id_vehiculo")),
-    Column("id_gasolinera", Integer, ForeignKey("gasolineras.id_gasolinera")),
-    Column("id_proyecto", Integer, ForeignKey("proyecto.id_proyecto")),
-)
+class bitacora(Base):
+    __tablename__ = "bitacora"
 
-# Crear las tablas en la base de datos
-meta.create_all(engine)
+    id_bitacora = Column(Integer, primary_key=True, autoincrement=True)
+    created_at = Column(DateTime, default=func.current_timestamp(), nullable=False)
+    comentario = Column(Text)
+    km_inicial = Column(Integer, nullable=False)
+    km_final = Column(Integer, nullable=False)
+    num_galones = Column(Float, nullable=False)
+    costo = Column(Float, nullable=False)
+    tipo_gasolina = Column(String(30), nullable=False)
+    id_usuario = Column(Integer, ForeignKey("usuarios.id_usuario"))
+    id_vehiculo = Column(Integer, ForeignKey("vehiculos.id_vehiculo"))
+    id_gasolinera = Column(Integer, ForeignKey("gasolineras.id_gasolinera"))
+    id_proyecto = Column(Integer, ForeignKey("proyecto.id_proyecto"))

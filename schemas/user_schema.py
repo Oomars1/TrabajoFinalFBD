@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
+# Modelo para la solicitud de login
 class LoginRequest(BaseModel):
     username: str
     password: str
@@ -12,9 +13,10 @@ class Rol(BaseModel):
     descripcion: str
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' en lugar de 'from_attributes'
 
-# Modelo para la tabla de Usuarios
+
+# Modelo para la tabla de Usuarios (User)
 class User(BaseModel):
     id_usuario: Optional[int] = None
     created_at: Optional[datetime] = None
@@ -25,11 +27,12 @@ class User(BaseModel):
     activo: bool = False
     username: str
 
-    # Relación con el rol
-    rol: Optional['Rol'] = None  # Usar comillas para evitar problemas de referencia circular
+    # Relación con el rol (si es necesario)
+    rol: Optional['Rol'] = None
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para la tabla de Vehículos
 class Vehiculo(BaseModel):
@@ -43,7 +46,8 @@ class Vehiculo(BaseModel):
     tipo_combustible: str
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para la tabla de Gasolineras
 class Gasolinera(BaseModel):
@@ -53,7 +57,8 @@ class Gasolinera(BaseModel):
     direccion: str
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para la tabla de Proyecto
 class Proyectos(BaseModel):
@@ -64,7 +69,8 @@ class Proyectos(BaseModel):
     activo: bool = False
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para la tabla de Bitacora
 class Bitacora(BaseModel):
@@ -88,7 +94,8 @@ class Bitacora(BaseModel):
     proyecto: Optional[Proyectos] = None
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Clase de respuesta de Bitacora, con las relaciones necesarias
 class BitacoraResponse(BaseModel):
@@ -106,7 +113,8 @@ class BitacoraResponse(BaseModel):
     proyecto: Optional[str] = None  # Nombre del proyecto
 
     class Config:
-        from_attributes = True
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para contar los usuarios totales
 class UserCount(BaseModel):
@@ -122,7 +130,8 @@ class VehiculoCreate(BaseModel):
     tipo_combustible: str
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo de respuesta para un Vehículo
 class VehiculoResponse(BaseModel):
@@ -135,7 +144,8 @@ class VehiculoResponse(BaseModel):
     tipo_combustible: str
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Modelo para crear un nuevo Log de actividad (por ejemplo, inicio de sesión)
 class LogCreate(BaseModel):
@@ -143,7 +153,8 @@ class LogCreate(BaseModel):
     id_usuario: int
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
+
 
 # Respuesta para el Log
 class LogResponse(BaseModel):
@@ -153,6 +164,4 @@ class LogResponse(BaseModel):
     id_usuario: int
 
     class Config:
-        from_attributes = True  # Cambié 'orm_mode' a 'from_attributes'
-
-
+        from_attributes = True  # Usamos 'orm_mode' para convertir el objeto SQLAlchemy en un objeto Pydantic
