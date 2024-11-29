@@ -18,30 +18,32 @@ def encrypt_password(password: str) -> str:
     return hashed_password.decode('utf-8')  # Devuelve el hash como string
 
 # Función de login
-@user.post("/login", tags=["users"], description="Login user") #okkkkkkk
+@user.post("/login", tags=["users"], description="Login user")
 def login(request: LoginRequest):
     try:
         # Realizar la consulta para obtener el usuario
-        query = select(users).where(users.c.username == request.username)  # Usamos 'select' de SQLAlchemy
+        query = select(users).where(users.c.username == request.username) 
         user = conn.execute(query).fetchone()  # Ejecutamos la consulta y obtenemos el primer resultado
         
         if user is None:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
         
         # Acceder a los valores de la tupla usando índices
-        user_id = user[0]  # id_usuario está en la primera posición
-        username = user[7]  # username está en la séptima posición (suponiendo que es el séptimo campo)
-        password_hash = user[4]  # password está en la quinta posición (suponiendo que es el quinto campo)
+        user_id = user[0]
+        username = user[7]
+        password_hash = user[4] 
 
         # Verificar la contraseña usando la función de hash
-        if not verify_password(request.password, password_hash):  # Usamos el hash de la contraseña
+        if not verify_password(request.password, password_hash):
             raise HTTPException(status_code=401, detail="Contraseña incorrecta")
         
         # Si la contraseña es correcta, devuelve el usuario
         return {"id_usuario": user_id, "username": username}
     
     except Exception as e:
+        conn.rollback()  # Asegura que si hay un error, se revierta la transacción
         raise HTTPException(status_code=400, detail=str(e))
+
 
 # Obtener el conteo de usuarios
 @user.get("/users/count", tags=["users"], response_model=UserCount) #ok
@@ -71,22 +73,26 @@ def get_all_users():
 @user.post("/users/", tags=["users"], response_model=User, description="Create a new user")
 def create_user(user: User):
     try:
-        # Encriptamos la contraseña
         hashed_password = encrypt_password(user.password)
         
         new_user = {
             "nombre": user.nombre,
             "apellido": user.apellido,
-            "password": hashed_password,  # Usamos la contraseña encriptada
+            "password": hashed_password,
             "id_rol": user.id_rol,
             "username": user.username,
             "created_at": datetime.now()
         }
         
+        # Iniciar la transacción
         result = conn.execute(users.insert().values(new_user))
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
+        
+        # Obtener el usuario creado
         return conn.execute(users.select().where(users.c.id_usuario == result.lastrowid)).first()
+    
     except Exception as e:
+        conn.rollback()  # Revertir cambios en caso de error
         raise HTTPException(status_code=400, detail=str(e))
 
 # Actualizar un usuario por su ID
@@ -113,19 +119,24 @@ def update_user(id: int, user: User):
     return conn.execute(users.select().where(users.c.id_usuario == id)).first()
 
 # Eliminar un usuario por su ID
-@user.delete("/users/{id}", tags=["users"], status_code=status.HTTP_204_NO_CONTENT) #ok
+@user.delete("/users/{id}", tags=["users"], status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(id: int):
-    result = conn.execute(users.delete().where(users.c.id_usuario == id))
-    conn.commit()
+    try:
+        result = conn.execute(users.delete().where(users.c.id_usuario == id))
+        conn.commit()
+        
+        if result.rowcount == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        return {"message": "Se eliminó el usuario", "id": id}
     
-    if result.rowcount == 0:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+    except Exception as e:
+        conn.rollback()  # Deshacer cambios si hay error
+        raise HTTPException(status_code=400, detail=str(e))
 
-    return {"message": "Se eliminó el usuario", "id": id}
 
 ##################################################################################################################
 # Crear un nuevo vehículo (si es necesario para tu aplicación)
-@user.post("/vehiculos/", tags=["vehiculos"], description="Create a new vehicle") #ok
+@user.post("/vehiculos/", tags=["vehiculos"], description="Create a new vehicle")
 def create_vehicle(vehicle: VehiculoCreate):
     try:
         stmt = insert(vehiculos).values(
@@ -137,12 +148,14 @@ def create_vehicle(vehicle: VehiculoCreate):
             tipo_combustible=vehicle.tipo_combustible
         )
         conn.execute(stmt)
-        conn.commit()
-
+        conn.commit()  # Confirmar la transacción
+        
         new_vehicle_id = conn.execute(select(vehiculos.c.id_vehiculo).order_by(vehiculos.c.id_vehiculo.desc()).limit(1)).scalar_one()
         return {"message": "Vehicle created successfully", "vehicle_id": new_vehicle_id}
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=str(e))
+
 
 # Obtener todos los vehículos (si es necesario para tu aplicación)
 @user.get("/vehiculos/", tags=["vehiculos"], response_model=List[VehiculoResponse], description="Get all vehicles") #ok
@@ -180,26 +193,23 @@ def get_vehicles():
 @user.delete("/vehiculos/{id}", tags=["vehiculos"], status_code=status.HTTP_204_NO_CONTENT, description="Delete a vehicle by ID")
 def delete_vehicle(id: int):
     try:
-        # Construir la consulta para eliminar el vehículo
         stmt = vehiculos.delete().where(vehiculos.c.id_vehiculo == id)
-        
-        # Ejecutar la consulta
         result = conn.execute(stmt)
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
         
-        # Verificar si se eliminó algún registro
         if result.rowcount == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehículo no encontrado")
+            raise HTTPException(status_code=404, detail="Vehículo no encontrado")
         
         return {"message": "Vehículo eliminado exitosamente", "vehicle_id": id}
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=f"Error eliminando el vehículo: {str(e)}")
 
+
 # Actualizar un vehículo por su ID
-@user.put("/vehiculos/{id}", tags=["vehiculos"], description="Update a vehicle by ID") #ok
+@user.put("/vehiculos/{id}", tags=["vehiculos"], description="Update a vehicle by ID")
 def update_vehicle(id: int, vehicle: VehiculoCreate):
     try:
-        # Construir la consulta para actualizar el vehículo
         stmt = vehiculos.update().where(vehiculos.c.id_vehiculo == id).values(
             modelo=vehicle.modelo,
             marca=vehicle.marca,
@@ -208,29 +218,27 @@ def update_vehicle(id: int, vehicle: VehiculoCreate):
             galonaje=vehicle.galonaje,
             tipo_combustible=vehicle.tipo_combustible
         )
-        
-        # Ejecutar la consulta
         result = conn.execute(stmt)
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
         
-        # Verificar si se actualizó algún registro
         if result.rowcount == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehículo no encontrado")
+            raise HTTPException(status_code=404, detail="Vehículo no encontrado")
         
         return {"message": "Vehículo actualizado exitosamente", "vehicle_id": id}
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=f"Error actualizando el vehículo: {str(e)}")
+
 
 
 ##################################################################################################################
 # Crear un nuevo registro en la bitácora  -------------- probada y pasada
-@user.post("/bitacora/", tags=["bitacora"], description="Create a new record in the bitacora") #no probada ojo faltan datos
+@user.post("/bitacora/", tags=["bitacora"], description="Create a new record in the bitacora")
 def create_bitacora(record: Bitacora):
     try:
-         # Preparamos la inserción de datos, incluyendo 'comentario' si es proporcionado
         stmt = insert(bitacora).values(
-            created_at= datetime.now(),  # Añadimos 'created_at'
-            comentario=record.comentario,   # Añadimos 'comentario' que es opcional
+            created_at=datetime.now(),
+            comentario=record.comentario,
             km_inicial=record.km_inicial,
             km_final=record.km_final,
             num_galones=record.num_galones,
@@ -242,12 +250,14 @@ def create_bitacora(record: Bitacora):
             id_proyecto=record.id_proyecto
         )
         conn.execute(stmt)
-        conn.commit()
-
+        conn.commit()  # Confirmar la transacción
+        
         new_record_id = conn.execute(select(bitacora.c.id_bitacora).order_by(bitacora.c.id_bitacora.desc()).limit(1)).scalar_one()
         return {"message": "Bitacora record created successfully", "record_id": new_record_id}
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=str(e))
+
 
 
 #okokokokok
@@ -354,14 +364,15 @@ def create_role(role: Rol):
     try:
         stmt = insert(rol).values(descripcion=role.descripcion)
         result = conn.execute(stmt)
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
         
-        # Recuperar el ID recién creado
         new_role_id = result.lastrowid
         created_role = conn.execute(select(rol).where(rol.c.id_rol == new_role_id)).fetchone()
         return Rol(id_rol=created_role.id_rol, descripcion=created_role.descripcion)
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=f"Error creando el rol: {str(e)}")
+
 
 
 # Leer todos los roles
@@ -387,12 +398,12 @@ def get_role_by_id(id_rol: int):
 
 
 # Actualizar un rol
-@user.put("/roles/{id_rol}", tags=["roles"], response_model=Rol) #ok
+@user.put("/roles/{id_rol}", tags=["roles"], response_model=Rol)
 def update_role(id_rol: int, role: Rol):
     try:
         stmt = update(rol).where(rol.c.id_rol == id_rol).values(descripcion=role.descripcion)
         result = conn.execute(stmt)
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
 
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Rol no encontrado")
@@ -400,22 +411,24 @@ def update_role(id_rol: int, role: Rol):
         updated_role = conn.execute(select(rol).where(rol.c.id_rol == id_rol)).fetchone()
         return Rol(id_rol=updated_role.id_rol, descripcion=updated_role.descripcion)
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=f"Error actualizando el rol: {str(e)}")
 
-
 # Eliminar un rol
-@user.delete("/roles/{id_rol}", tags=["roles"], status_code=status.HTTP_204_NO_CONTENT) #ok
+@user.delete("/roles/{id_rol}", tags=["roles"], status_code=status.HTTP_204_NO_CONTENT)
 def delete_role(id_rol: int):
     try:
         stmt = delete(rol).where(rol.c.id_rol == id_rol)
         result = conn.execute(stmt)
-        conn.commit()
+        conn.commit()  # Confirmar la transacción
 
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Rol no encontrado")
         return {"message": f"Rol con id {id_rol} eliminado exitosamente"}
     except Exception as e:
+        conn.rollback()  # Revertir si ocurre un error
         raise HTTPException(status_code=400, detail=f"Error eliminando el rol: {str(e)}")
+
     
 ##################################################################################################################
 # Crear un registro de log
