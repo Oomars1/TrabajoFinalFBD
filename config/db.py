@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 
-# Conexión a la base de datos (asegúrate de que la URL de conexión es correcta)
-engine = create_engine("mariadb+pymysql://root:oomars2401@localhost:3306/pruebagas")
+# Conexión a la base de datos PostgreSQL
+engine = create_engine("postgresql://postgres:tXebTxHkwclkDkEoKAPWvzbuNJkYpGES@autorack.proxy.rlwy.net:23141/railway")
 
 # Crea la metadata para la creación de los datos
 meta = MetaData()
