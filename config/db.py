@@ -1,8 +1,11 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 
+# URL de conexión a PostgreSQL (Render)
+DATABASE_URL = "postgresql://pruebagas_zusn_user:HPVUQuzq6DuI1M4PTfSSTMuhanI7Er8M@dpg-ct58d6d6l47c73fdbdag-a.oregon-postgres.render.com/pruebagas_zusn"
+
 # Conexión a la base de datos PostgreSQL
-engine = create_engine("postgresql://postgres:tXebTxHkwclkDkEoKAPWvzbuNJkYpGES@autorack.proxy.rlwy.net:23141/railway")
+engine = create_engine(DATABASE_URL)
 
 # Crea la metadata para la creación de los datos
 meta = MetaData()
