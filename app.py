@@ -9,7 +9,7 @@ app = FastAPI()
 async def favicon():
     return {"message": "No favicon available"}
 
-@app.get("/docs")
+@app.get("/")
 def read_root():
     return {"message": "Welcome to the Users API"}
 
